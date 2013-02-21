@@ -2,6 +2,7 @@ Usedbookscraper::Application.routes.draw do
   root to: 'home#index'
   get "home/index"
 
+  post '/home/shelves'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

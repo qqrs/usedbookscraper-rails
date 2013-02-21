@@ -2,5 +2,12 @@
 <div class="row">
   <div class="span6 offset3">
   <h1>Hello</h1>
+
+    <%= form_tag("/home/shelves") do -%>
+        <%=label_tag 'goodreads user id' %>
+        <%=text_field_tag 'goodreads_user_id'%>
+
+        <div><%= submit_tag 'Save' %></div>
+    <% end -%>
   </div>
 </div>
