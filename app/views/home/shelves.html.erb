@@ -6,8 +6,15 @@
     Goodreads api key: <%= ENV["GOODREADS_KEY"] %> <br />
 
     <ul>
-      <% @user_shelves.each do |shelf| %>
-        <li><%= shelf.name %></li>
+        <%= form_tag("/home/books") do -%>
+          <% @user_shelves.each do |shelf| %>
+            <%#=label_tag shelf.name, shelf.name, class: 'checkbox' %>
+            <label class="checkbox">
+              <%=check_box_tag 'shelves[]', shelf.name %>
+              <%=shelf.name %>
+            </label>
+          <% end -%>
+        <div><%= submit_tag 'Save' %></div>
       <% end %>
     </ul>
 

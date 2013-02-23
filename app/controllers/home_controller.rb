@@ -13,5 +13,13 @@ class HomeController < ApplicationController
 
     gr = Goodreads.new(api_key: ENV["GOODREADS_KEY"]) 
     @user_shelves = gr.user(@goodreads_user_id).user_shelves
+
+    # mock shelf names for testing
+    #@user_shelves = (1..10).map{|n| Hashie::Mash.new({name: "shelf #{n}"}) }
+
+  end
+
+  def books
+    @shelves = params[:shelves]
   end
 end
