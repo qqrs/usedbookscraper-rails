@@ -7,7 +7,8 @@
 
     <ul>
         <%= form_tag("/home/books") do -%>
-          <% @user_shelves.each do |shelf| %>
+          <%= hidden_field_tag 'goodreads_user_id', @goodreads_user_id %> 
+          <% @shelves.each do |shelf| %>
             <%#=label_tag shelf.name, shelf.name, class: 'checkbox' %>
             <label class="checkbox">
               <%=check_box_tag 'shelves[]', shelf.name %>

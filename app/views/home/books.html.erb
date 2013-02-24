@@ -3,11 +3,9 @@
   <h1>select books</h1>
 
 
-    <ul>
-    <% @shelves.each do |shelf| %>
-      <li><%= shelf %></li>
-    <% end %>
-    </ul>
+    <%= @book_titles %>
+    <%= debug(@books) %>
 
   </div>
 </div>
+<%= debug(@books_debug) if Rails.env.development? %>
