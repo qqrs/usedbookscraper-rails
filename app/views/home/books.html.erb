@@ -1,11 +1,23 @@
-<div class="row">
-  <div class="span6 offset3">
+<div class="row"> <div class="span6 offset3">
   <h1>select books</h1>
+</div> </div>
 
+<div class="row"> <div class="span6 offset4">
+    <ul class="books span6">
+      <% @books.each do |book| %>
+        <li class="offset0">
+          <%# TODO: pad image to minimum width so text is aligned %>
+          <%= image_tag book.image, alt: "book cover" %>
+          <div class="title"><%= book.title %></div>
+          <div class="author"><%= book.author %></div>
+        </li>
+      <% end %>
+    </ul>
+</div> </div>
 
-    <%= @books.length %>
+<div class="row"> <div class="span6 offset3">
+    <%= @books_length %>
     <%= debug(@books) %>
+</div> </div>
 
-  </div>
-</div>
 <%= debug(@books_debug) if Rails.env.development? %>

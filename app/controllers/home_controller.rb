@@ -26,23 +26,25 @@ class HomeController < ApplicationController
     gr = Goodreads.new(api_key: ENV["GOODREADS_KEY"]) 
     @books = []
 
+    @books_length = ""
     shelves.each do |shelf_name|
-      # TODO: goodreads api paginates -- this only gets first 20 books per shelf
-      shelf = gr.shelf(goodreads_user_id, shelf_name)
+      # TODO: goodreads api paginates -- this gets first 200 books per shelf
+      shelf = gr.shelf(goodreads_user_id, shelf_name, per_page: '200')
       shelf.books.each do |b|
         @books << Hashie::Mash.new(
           { 
             title:        b.book.title,
             author:       b.book.authors.author.name,
             isbn:         b.book.isbn,
-            image_url:    b.book.image_url,
+            image:        b.book.small_image_url,
             owned:        b.owned,
             link:         b.link
           }
         )
       end
 
-      @books_debug = shelf if Rails.env.development?  
+      @books_debug = shelf if Rails.env.development?
+      @books_length << shelf.books.length.to_s << ", "
     end
 
     @books.uniq!{|b| b.isbn}
