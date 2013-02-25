@@ -20,6 +20,8 @@ class HomeController < ApplicationController
   end
 
   def books
+    @query = Query.new
+
     goodreads_user_id = params[:goodreads_user_id]
     shelves = params[:shelves]
 
@@ -31,6 +33,12 @@ class HomeController < ApplicationController
       # TODO: goodreads api paginates -- this gets first 200 books per shelf
       shelf = gr.shelf(goodreads_user_id, shelf_name, per_page: '200')
       shelf.books.each do |b|
+        @books << @query.books.build( 
+            title:  b.book.title, 
+            author: b.book.authors.author.name,
+            isbn:   b.book.isbn
+        )
+=begin
         @books << Hashie::Mash.new(
           { 
             title:        b.book.title,
@@ -41,7 +49,10 @@ class HomeController < ApplicationController
             link:         b.link
           }
         )
+=end
       end
+
+      @query.save
 
       @books_debug = shelf if Rails.env.development?
       @books_length << shelf.books.length.to_s << ", "
