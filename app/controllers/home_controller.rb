@@ -32,8 +32,7 @@ class HomeController < ApplicationController
       # TODO: goodreads api paginates -- this gets first 200 books per shelf
       shelf = gr.shelf(goodreads_user_id, shelf_name, per_page: '200')
       shelf.books.each do |b|
-        #book = Book.where(isbn: b.book.isbn).first_or_initialize(
-        book = Book.new(
+        book = Book.where(isbn: b.book.isbn).first_or_initialize(
             title:  b.book.title, 
             author: b.book.authors.author.name,
             isbn:   b.book.isbn
