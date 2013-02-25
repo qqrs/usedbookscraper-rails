@@ -3,20 +3,24 @@
 </div> </div>
 
 <div class="row"> <div class="span6 offset4">
-    <ul class="books span4">
+  <ul class="books span4">
+    <%= form_tag("/home/query") do -%>
       <% @books.each do |book| %>
         <li class="offset0">
-          <%# TODO: pad image to minimum width so text is aligned %>
-          <%#= image_tag book.image, alt: "book cover" %>
-          <div class="title"><%= book.title %></div>
-          <div class="author"><%= book.author %></div>
+        <%# TODO: pad image to minimum width so text is aligned %>
+        <%#= image_tag book.image, alt: "book cover" %>
+        <%#= check_box_tag "query[book_ids][]", book.id, 
+                                          @query.book_ids.include?(book.id) %>
+        <div class="title"><%= book.title %></div>
+        <div class="author"><%= book.author %></div>
         </li>
       <% end %>
-    </ul>
+      <div><%= submit_tag 'Save' %></div>
+    <% end %>
+  </ul>
 </div> </div>
 
 <div class="row"> 
-    <%= @books_length %>
     <%= debug(@books) %>
 </div>
 

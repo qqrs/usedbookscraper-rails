@@ -28,18 +28,15 @@ class HomeController < ApplicationController
     gr = Goodreads.new(api_key: ENV["GOODREADS_KEY"]) 
     @books = []
 
-    @books_length = ""
     shelves.each do |shelf_name|
       # TODO: goodreads api paginates -- this gets first 200 books per shelf
       shelf = gr.shelf(goodreads_user_id, shelf_name, per_page: '200')
       shelf.books.each do |b|
-        #@query.books.build( 
         book = Book.new( 
             title:  b.book.title, 
             author: b.book.authors.author.name,
             isbn:   b.book.isbn
         )
-        #@query.books.pop if @query.books.last.invalid?
         @query.books << book if book.valid?
 
 =begin
@@ -60,10 +57,14 @@ class HomeController < ApplicationController
       @books = @query.books
 
       @books_debug = shelf if Rails.env.development?
-      @books_length << shelf.books.length.to_s << ", "
     end
 
+    # TODO: enforce uniqueness in database
     @books.uniq!{|b| b.isbn}
 
+  end
+
+
+  def query
   end
 end
