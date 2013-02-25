@@ -5,12 +5,15 @@
 <div class="row"> <div class="span6 offset4">
   <ul class="books span4">
     <%= form_tag("/home/query") do -%>
+      <%= hidden_field_tag 'query_id', @query.id %> 
       <% @books.each do |book| %>
         <li class="offset0">
         <%# TODO: pad image to minimum width so text is aligned %>
         <%#= image_tag book.image, alt: "book cover" %>
-        <%#= check_box_tag "query[book_ids][]", book.id, 
-                                          @query.book_ids.include?(book.id) %>
+        <%= check_box_tag "book_ids[]", book.id, true %>
+        <%#= fields_for "books[]", book do |book_id| %>
+          <%#= book_id.check_box :id %>
+        <%# end %>
         <div class="title"><%= book.title %></div>
         <div class="author"><%= book.author %></div>
         </li>

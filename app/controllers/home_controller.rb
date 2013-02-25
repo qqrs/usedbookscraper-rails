@@ -37,7 +37,11 @@ class HomeController < ApplicationController
             author: b.book.authors.author.name,
             isbn:   b.book.isbn
         )
-        @query.books << book if book.valid?
+
+        if book.valid?
+            book.save
+            @books << book
+        end
 
 =begin
         @books << Hashie::Mash.new(
@@ -54,17 +58,18 @@ class HomeController < ApplicationController
       end
 
       @query.save
-      @books = @query.books
+      #@books = @query.books
 
       @books_debug = shelf if Rails.env.development?
     end
 
     # TODO: enforce uniqueness in database
-    @books.uniq!{|b| b.isbn}
+    #@books.uniq!{|b| b.isbn}
 
   end
 
 
   def query
+      @query = Query.find(params[:query_id])
   end
 end
