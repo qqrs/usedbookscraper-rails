@@ -32,15 +32,16 @@ class HomeController < ApplicationController
       # TODO: goodreads api paginates -- this gets first 200 books per shelf
       shelf = gr.shelf(goodreads_user_id, shelf_name, per_page: '200')
       shelf.books.each do |b|
-        book = Book.new( 
+        #book = Book.where(isbn: b.book.isbn).first_or_initialize(
+        book = Book.new(
             title:  b.book.title, 
             author: b.book.authors.author.name,
             isbn:   b.book.isbn
         )
 
         if book.valid?
-            book.save
-            @books << book
+          book.save if book.new_record?
+          @books << book
         end
 
 =begin
@@ -58,7 +59,6 @@ class HomeController < ApplicationController
       end
 
       @query.save
-      #@books = @query.books
 
       @books_debug = shelf if Rails.env.development?
     end
@@ -71,5 +71,12 @@ class HomeController < ApplicationController
 
   def query
       @query = Query.find(params[:query_id])
+      @query.books.clear
+      params[:book_ids].each do |id|
+        @query.books << Book.find(id)
+      end
+      @query.save
+
+      @isbns = @query.books.map{|b| b.isbn}.join(", ")
   end
 end
