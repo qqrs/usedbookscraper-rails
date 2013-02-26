@@ -81,9 +81,12 @@ class HomeController < ApplicationController
 
       #@isbns = @query.books.map{|b| xisbn(b.isbn) }
 
+      @book_editions = []
       @query.books.each do |book| 
-        isbns = xisbn(book.isbn)
-        isbns.each do |ed_isbn|
+        alt_editions = xisbn_get_editions(book.isbn)
+        @book_editions << alt_editions
+=begin
+        alt_editions.each do |ed_isbn|
           edition = Edition.where(isbn: ed_isbn).first_or_initialize(
               isbn:   ed_isbn
           )
@@ -105,6 +108,30 @@ class HomeController < ApplicationController
         end
 
         book.save
+=end
       end
   end
+
+  private
+  # TODO: move this somewhere else?
+    def xisbn_get_editions(isbn)
+      require 'net/http'
+      require 'json'
+      require 'hashie'
+
+      oclc_host = "xisbn.worldcat.org"
+      oclc_request = "/webservices/xid/isbn/#{isbn}?method=getEditions&fl=form,lang,author,ed,year,isbn,title&format=json"
+
+      http = Net::HTTP.new(oclc_host)
+      http.read_timeout = 20
+      http.open_timeout = 20
+      response = http.get(oclc_request)
+
+      return [] if response.code != '200'
+      hash = JSON.parse response.body
+      return [] if hash['stat'] != 'ok'
+
+      return Hashie::Mash.new(hash).list
+    end
+
 end
