@@ -71,7 +71,7 @@ class HomeController < ApplicationController
   end
 
 
-  def query
+  def editions
       @query = Query.find(params[:query_id])
       @query.books.clear
       params[:book_ids].each do |id|
@@ -87,7 +87,8 @@ class HomeController < ApplicationController
         alt_editions.select! {|e| e.lang == "eng" }
         alt_editions.sort_by! {|e| e.year || "" }
         # format includes BA book or BB hardcover or BC paperback
-        alt_editions.select! {|e| e.form.any? {|f| %w'BA BB BC'.include?(f) } }     
+        alt_editions.select! {|e| e.form && 
+                              e.form.any? {|f| %w'BA BB BC'.include?(f) } }     
         @book_editions << alt_editions
 
         alt_editions.each do |alt_ed|
