@@ -84,22 +84,21 @@ class HomeController < ApplicationController
       @book_editions = []
       @query.books.each do |book| 
         alt_editions = xisbn_get_editions(book.isbn)
+        alt_editions.select! {|e| e.lang == "eng" }
+        alt_editions.sort_by! {|e| e.year || "" }
+        # format includes BA book or BB hardcover or BC paperback
+        alt_editions.select! {|e| e.form.any? {|f| %w'BA BB BC'.include?(f) } }     
         @book_editions << alt_editions
-=begin
-        alt_editions.each do |ed_isbn|
-          edition = Edition.where(isbn: ed_isbn).first_or_initialize(
-              isbn:   ed_isbn
-          )
 
-          if edition.new_record?
-            search = GoogleBooks.search("isbn:#{ed_isbn}")
-            unless search.nil? || search.first.nil?
-              edition.title = search.first.title
-              edition.author = search.first.authors
-              edition.language = search.first.language
-              edition.published_date = search.first.published_date
-            end
-          end
+        alt_editions.each do |alt_ed|
+          edition = Edition.where(isbn: alt_ed.isbn).first_or_initialize(
+              isbn:     alt_ed.isbn.first,
+              title:    alt_ed.title,
+              author:   alt_ed.author,
+              language: alt_ed.lang,
+              ed:       alt_ed.ed,
+              published_date:   alt_ed.year
+          )
 
           if edition.valid?
             edition.save if edition.new_record?
@@ -107,13 +106,13 @@ class HomeController < ApplicationController
           end
         end
 
-        book.save
-=end
+        #book.save
       end
   end
 
   private
-  # TODO: move this somewhere else?
+    # TODO: move this somewhere else?
+    # TODO: handle timeout
     def xisbn_get_editions(isbn)
       require 'net/http'
       require 'json'

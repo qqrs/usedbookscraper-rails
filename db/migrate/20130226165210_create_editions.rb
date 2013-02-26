@@ -7,6 +7,7 @@ class CreateEditions < ActiveRecord::Migration
       t.string :author
       t.string :language
       t.string :published_date
+      t.string :ed
 
       t.timestamps
     end
