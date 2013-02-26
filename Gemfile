@@ -8,6 +8,7 @@ gem 'will_paginate', '3.0.3'
 gem 'bootstrap-will_paginate', '0.0.6'
 gem 'goodreads', '0.2.1'
 gem 'xisbn', '0.0.4'
+gem 'googlebooks', '0.0.6'
 
 group :development, :test do
   gem 'sqlite3', '1.3.5'

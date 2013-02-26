@@ -1,6 +1,7 @@
 require 'goodreads'
 require 'xisbn'
 include XISBN
+require 'googlebooks'
 
 class HomeController < ApplicationController
   def index
@@ -78,6 +79,32 @@ class HomeController < ApplicationController
       end
       @query.save
 
-      @isbns = @query.books.map{|b| xisbn(b.isbn) }
+      #@isbns = @query.books.map{|b| xisbn(b.isbn) }
+
+      @query.books.each do |book| 
+        isbns = xisbn(book.isbn)
+        isbns.each do |ed_isbn|
+          edition = Edition.where(isbn: ed_isbn).first_or_initialize(
+              isbn:   ed_isbn
+          )
+
+          if edition.new_record?
+            search = GoogleBooks.search("isbn:#{ed_isbn}")
+            unless search.nil? || search.first.nil?
+              edition.title = search.first.title
+              edition.author = search.first.authors
+              edition.language = search.first.language
+              edition.published_date = search.first.published_date
+            end
+          end
+
+          if edition.valid?
+            edition.save if edition.new_record?
+            book.editions << edition
+          end
+        end
+
+        book.save
+      end
   end
 end

@@ -5,6 +5,5 @@ class Book < ActiveRecord::Base
   validates :author, presence: true
   validates :title, presence: true
 
-  has_many :query_books
-  has_many :books, through: :query_books
+  has_many :editions
 end

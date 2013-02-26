@@ -7,5 +7,7 @@ class CreateBooks < ActiveRecord::Migration
 
       t.timestamps
     end
+
+    add_index :books, :isbn, unique: true
   end
 end
