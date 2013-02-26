@@ -1,4 +1,6 @@
 require 'goodreads'
+require 'xisbn'
+include XISBN
 
 class HomeController < ApplicationController
   def index
@@ -76,6 +78,6 @@ class HomeController < ApplicationController
       end
       @query.save
 
-      @isbns = @query.books.map{|b| b.isbn}.join(", ")
+      @isbns = @query.books.map{|b| xisbn(b.isbn) }
   end
 end
