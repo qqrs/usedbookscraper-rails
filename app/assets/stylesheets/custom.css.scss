@@ -204,17 +204,17 @@ input {
   @extend .error;
  }
 
-/* users index */
+/* books */
 
 .books {
   list-style: none;
   margin: 0;
   li {
     overflow: auto;
-    padding: 10px 0;
+    padding: 0px 0;
     border-top: 1px solid $grayLighter;
     &:last-child {
-      border-bottom: 1px solid $grayLighter;
+      border-bottom: 2px solid $grayLighter;
     }
   }
   img {

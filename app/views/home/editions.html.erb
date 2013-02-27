@@ -1,2 +1,38 @@
+<div class="row"> <div class="span6 offset3">
+  <h1>select editions</h1>
+</div> </div>
+
+<div class="row"> <div class="span4 offset4">
+    <%= form_tag("/home/query") do -%>
+      <%= hidden_field_tag 'query_id', @query.id %> 
+      <%= "No valid editions" if @query.books.blank? %>
+      <%# debugger %>
+      <% @query.books.each do |book| %>
+        <ul class="books span4 offset0">
+
+        <h3><b><%= book.title %></b></h3>
+        <% book.editions.each do |edition| %>
+
+        <li> 
+        <label class="checkbox">
+
+          <%= check_box_tag "edition_ids[]", edition.id, true %>
+          <div class="title"><%= edition.title %></div>
+          <div class="author">
+            <%= edition.author %> &#x2022;
+            <%= edition.published_date %> &#x2022;
+            <%= edition.ed %>
+          </div>
+
+        <label class="checkbox">
+        </li>
+
+        <% end %>
+        </ul>
+      <% end %>
+      <div><%= submit_tag 'Save' %></div>
+    <% end %>
+</div> </div>
+
+
 <%= debug(@book_editions) %>
-<%= debug(@query) if Rails.env.development? %>
