@@ -5,6 +5,7 @@ Usedbookscraper::Application.routes.draw do
   post '/home/shelves'
   post '/home/books'
   post '/home/editions'
+  post '/home/query'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

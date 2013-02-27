@@ -72,43 +72,47 @@ class HomeController < ApplicationController
 
 
   def editions
-      @query = Query.find(params[:query_id])
-      @query.books.clear
-      params[:book_ids].each do |id|
-        @query.books << Book.find(id)
+    @query = Query.find(params[:query_id])
+    @query.books.clear
+    params[:book_ids].each do |id|
+      @query.books << Book.find(id)
+    end
+    @query.save
+
+    @book_editions = []
+    @query.books.each do |book| 
+      alt_editions = xisbn_get_editions(book.isbn)
+      alt_editions.select! {|e| e.lang == "eng" }
+      # format includes BA book or BB hardcover or BC paperback
+      alt_editions.select! {|e| e.form && 
+                            e.form.any? {|f| %w'BA BB BC'.include?(f) } }     
+      alt_editions.sort_by!{|e| e.isbn.first || "" }.reverse!
+      #@book_editions << alt_editions
+
+      alt_editions.each do |alt_ed|
+        edition = book.editions.where(isbn: alt_ed.isbn.first).first_or_create(
+            isbn:     alt_ed.isbn.first,
+            title:    alt_ed.title,
+            author:   alt_ed.author,
+            language: alt_ed.lang,
+            ed:       alt_ed.ed,
+            published_date:   alt_ed.year
+        )
       end
-      @query.save
+    end
+  end
 
-      #@isbns = @query.books.map{|b| xisbn(b.isbn) }
+  def query
+    @query = Query.find(params[:query_id])
+    @query.query_books.each{|b| b.query_editions.clear }
 
-      @book_editions = []
-      @query.books.each do |book| 
-        alt_editions = xisbn_get_editions(book.isbn)
-        alt_editions.select! {|e| e.lang == "eng" }
-        alt_editions.sort_by! {|e| e.year || "" }
-        # format includes BA book or BB hardcover or BC paperback
-        alt_editions.select! {|e| e.form && 
-                              e.form.any? {|f| %w'BA BB BC'.include?(f) } }     
-        @book_editions << alt_editions
-
-        alt_editions.each do |alt_ed|
-          edition = Edition.where(isbn: alt_ed.isbn).first_or_initialize(
-              isbn:     alt_ed.isbn.first,
-              title:    alt_ed.title,
-              author:   alt_ed.author,
-              language: alt_ed.lang,
-              ed:       alt_ed.ed,
-              published_date:   alt_ed.year
-          )
-
-          if edition.valid?
-            edition.save if edition.new_record?
-            book.editions << edition
-          end
-        end
-
-        #book.save
-      end
+    params[:edition_ids].each do |id|
+      ed = Edition.find(id)
+      qb = @query.query_books.find_by_book_id( ed.book.id )
+      qb.editions << ed
+    end
+    debugger
+    0
   end
 
   private

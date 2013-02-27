@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130226165210) do
+ActiveRecord::Schema.define(:version => 20130227170428) do
 
   create_table "books", :force => true do |t|
     t.string   "isbn"
@@ -55,5 +55,16 @@ ActiveRecord::Schema.define(:version => 20130226165210) do
   add_index "query_books", ["book_id"], :name => "index_query_books_on_book_id"
   add_index "query_books", ["query_id", "book_id"], :name => "index_query_books_on_query_id_and_book_id", :unique => true
   add_index "query_books", ["query_id"], :name => "index_query_books_on_query_id"
+
+  create_table "query_editions", :force => true do |t|
+    t.integer  "query_book_id"
+    t.integer  "edition_id"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+  end
+
+  add_index "query_editions", ["edition_id"], :name => "index_query_editions_on_edition_id"
+  add_index "query_editions", ["query_book_id", "edition_id"], :name => "index_query_editions_on_query_book_id_and_edition_id", :unique => true
+  add_index "query_editions", ["query_book_id"], :name => "index_query_editions_on_query_book_id"
 
 end
