@@ -86,7 +86,7 @@ class HomeController < ApplicationController
       # format includes BA book or BB hardcover or BC paperback
       alt_editions.select! {|e| e.form && 
                             e.form.any? {|f| %w'BA BB BC'.include?(f) } }     
-      alt_editions.sort_by!{|e| e.isbn.first || "" }.reverse!
+      alt_editions.sort_by!{|e| e.year || "9999" }.reverse!
       #@book_editions << alt_editions
 
       alt_editions.each do |alt_ed|
