@@ -9,6 +9,8 @@ gem 'bootstrap-will_paginate', '0.0.6'
 gem 'goodreads', '0.2.1'
 gem 'xisbn', '0.0.4'
 gem 'googlebooks', '0.0.6'
+gem 'vacuum', '0.3.1'
+gem 'nokogiri', '1.5.6'
 gem 'debugger'
 
 group :development, :test do

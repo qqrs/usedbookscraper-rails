@@ -1,0 +1,137 @@
+---
+ItemLookupResponse:
+  xmlns: http://webservices.amazon.com/AWSECommerceService/2011-08-01
+  OperationRequest:
+    HTTPHeaders:
+      Header:
+        Name: UserAgent
+        Value: Jeff/0.6.0 (Language=Ruby; ripple)
+    RequestId: b6992c22-8100-4d4d-8d89-31438402dbce
+    Arguments:
+      Argument:
+      - Name: Operation
+        Value: ItemLookup
+      - Name: Service
+        Value: AWSECommerceService
+      - Name: Signature
+        Value: 2LPr+Yn3fVYAujAqz7YbUu0iJxGrIVjWVkTaRhsadZE=
+      - Name: AssociateTag
+        Value: azkey-20
+      - Name: Version
+        Value: '2011-08-01'
+      - Name: ItemId
+        Value: 0684813785
+      - Name: SignatureMethod
+        Value: HmacSHA256
+      - Name: IdType
+        Value: ISBN
+      - Name: AWSAccessKeyId
+        Value: AKIAJ4QNKMYR3NOOA3AA
+      - Name: Timestamp
+        Value: '2013-02-27T23:12:22Z'
+      - Name: ResponseGroup
+        Value: ItemAttributes,OfferListings
+      - Name: SearchIndex
+        Value: Books
+      - Name: SignatureVersion
+        Value: '2'
+    RequestProcessingTime: '0.0253550000000000'
+  Items:
+    Request:
+      IsValid: 'True'
+      ItemLookupRequest:
+        IdType: ISBN
+        ItemId: 0684813785
+        ResponseGroup:
+        - ItemAttributes
+        - OfferListings
+        SearchIndex: Books
+        VariationPage: All
+    Item:
+      ASIN: 0684813785
+      DetailPageURL: http://www.amazon.com/Making-Atomic-Bomb-Richard-Rhodes/dp/0684813785%3FSubscriptionId%3DAKIAJ4QNKMYR3NOOA3AA%26tag%3Dazkey-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D0684813785
+      ItemLinks:
+        ItemLink:
+        - Description: Technical Details
+          URL: http://www.amazon.com/Making-Atomic-Bomb-Richard-Rhodes/dp/tech-data/0684813785%3FSubscriptionId%3DAKIAJ4QNKMYR3NOOA3AA%26tag%3Dazkey-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3D0684813785
+        - Description: Add To Baby Registry
+          URL: http://www.amazon.com/gp/registry/baby/add-item.html%3Fasin.0%3D0684813785%26SubscriptionId%3DAKIAJ4QNKMYR3NOOA3AA%26tag%3Dazkey-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3D0684813785
+        - Description: Add To Wedding Registry
+          URL: http://www.amazon.com/gp/registry/wedding/add-item.html%3Fasin.0%3D0684813785%26SubscriptionId%3DAKIAJ4QNKMYR3NOOA3AA%26tag%3Dazkey-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3D0684813785
+        - Description: Add To Wishlist
+          URL: http://www.amazon.com/gp/registry/wishlist/add-item.html%3Fasin.0%3D0684813785%26SubscriptionId%3DAKIAJ4QNKMYR3NOOA3AA%26tag%3Dazkey-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3D0684813785
+        - Description: Tell A Friend
+          URL: http://www.amazon.com/gp/pdp/taf/0684813785%3FSubscriptionId%3DAKIAJ4QNKMYR3NOOA3AA%26tag%3Dazkey-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3D0684813785
+        - Description: All Customer Reviews
+          URL: http://www.amazon.com/review/product/0684813785%3FSubscriptionId%3DAKIAJ4QNKMYR3NOOA3AA%26tag%3Dazkey-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3D0684813785
+        - Description: All Offers
+          URL: http://www.amazon.com/gp/offer-listing/0684813785%3FSubscriptionId%3DAKIAJ4QNKMYR3NOOA3AA%26tag%3Dazkey-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3D0684813785
+      ItemAttributes:
+        Author: Richard Rhodes
+        Binding: Paperback
+        Brand: Baker and Taylor
+        EAN: '9780684813783'
+        EANList:
+          EANListElement: '9780684813783'
+        ISBN: 0684813785
+        IsEligibleForTradeIn: '1'
+        ItemDimensions:
+          Height: '843'
+          Length: '551'
+          Weight: '1'
+          Width: '169'
+        Label: Simon & Schuster
+        Languages:
+          Language:
+          - Name: English
+            Type: Unknown
+          - Name: English
+            Type: Original Language
+          - Name: English
+            Type: Published
+        ListPrice:
+          Amount: '2100'
+          CurrencyCode: USD
+          FormattedPrice: $21.00
+        Manufacturer: Simon & Schuster
+        MPN: MKAT855
+        NumberOfItems: '1'
+        NumberOfPages: '928'
+        PackageDimensions:
+          Height: '150'
+          Length: '900'
+          Weight: '250'
+          Width: '600'
+        PackageQuantity: '1'
+        PartNumber: MKAT855
+        ProductGroup: Book
+        ProductTypeName: ABIS_BOOK
+        PublicationDate: '1995-08-01'
+        Publisher: Simon & Schuster
+        ReleaseDate: '1995-08-01'
+        SKU: R1-24733
+        Studio: Simon & Schuster
+        Title: The Making of the Atomic Bomb
+        TradeInValue:
+          Amount: '25'
+          CurrencyCode: USD
+          FormattedPrice: $0.25
+      Offers:
+        TotalOffers: '1'
+        TotalOfferPages: '1'
+        MoreOffersUrl: http://www.amazon.com/gp/offer-listing/0684813785%3FSubscriptionId%3DAKIAJ4QNKMYR3NOOA3AA%26tag%3Dazkey-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D386001%26creativeASIN%3D0684813785
+        Offer:
+          OfferAttributes:
+            Condition: New
+          OfferListing:
+            OfferListingId: A%2F0JeFhigF1YyrWAkgA11k4QMjLe0b17eJUpGPGvmopG53bcm5ry6%2BPFZkGLgOiQiJxoomUQVXoPVaE3zm9S9rzhiDkee3vhX4e0aoBBa08%3D
+            Price:
+              Amount: '2100'
+              CurrencyCode: USD
+              FormattedPrice: $21.00
+            Availability: Usually ships in 24 hours
+            AvailabilityAttributes:
+              AvailabilityType: now
+              MinimumHours: '0'
+              MaximumHours: '0'
+            IsEligibleForSuperSaverShipping: '1'

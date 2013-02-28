@@ -111,8 +111,9 @@ class HomeController < ApplicationController
       qb = @query.query_books.find_by_book_id( ed.book.id )
       qb.editions << ed
     end
-    debugger
-    0
+
+    @half_search = []
+    @query.editions.each {|e| @half_search << {isbn: e.isbn, title: e.book.title} }
   end
 
   private
