@@ -209,12 +209,18 @@ input {
 .books {
   list-style: none;
   margin: 0;
+
+  -moz-column-count:2; /* Firefox */
+  -webkit-column-count:2; /* Safari and Chrome */
+  column-count:2;
+
   li {
     overflow: auto;
-    padding: 0px 0;
-    border-top: 1px solid $grayLighter;
+    margin: 0;
+    padding: 0px 0px 0px 4px;
+    /*border-top: 1px solid $grayLighter;*/
     &:last-child {
-      border-bottom: 2px solid $grayLighter;
+      /*border-bottom: 1px solid $grayLighter;*/
     }
   }
   img {
@@ -227,6 +233,10 @@ input {
   .author {
     font-size: small;
   }
+}
+
+hr {
+  margin: 2px 0px;
 }
 
 /* microposts */

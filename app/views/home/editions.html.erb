@@ -2,15 +2,15 @@
   <h1>select editions</h1>
 </div> </div>
 
-<div class="row"> <div class="span4 offset4">
+<div class="row"> <div class="span8 offset4">
     <%= form_tag("/home/query") do -%>
       <%= hidden_field_tag 'query_id', @query.id %> 
       <%= "No valid editions" if @query.books.blank? %>
       <%# debugger %>
       <% @query.books.each do |book| %>
-        <ul class="books span4 offset0">
-
         <h3><b><%= book.title %></b></h3>
+        <ul class="books">
+
         <% book.editions.each do |edition| %>
 
         <li> 
@@ -24,11 +24,13 @@
             <%= edition.ed %>
           </div>
 
-        <label class="checkbox">
+        </label>
+        <hr><br>
         </li>
 
         <% end %>
         </ul>
+        <hr>
       <% end %>
       <div><%= submit_tag 'Save' %></div>
     <% end %>
