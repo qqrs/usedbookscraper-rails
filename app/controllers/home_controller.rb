@@ -110,10 +110,28 @@ class HomeController < ApplicationController
     end
 
     @half_search = []
-    @query.editions.each do |e| 
-      #@half_search << {isbn: e.isbn, title: e.book.title} 
-      listings = half_finditems(isbn: e.isbn)
-      # find or create HalfListing by half listing ID and link to e
+    @query.editions.each do |ed| 
+      #@half_search << {isbn: ed.isbn, title: ed.book.title} 
+      # TODO: all conditions
+      listings = half_finditems(isbn: ed.isbn)
+      listings.each do |listing|
+        hl = HalfListing.where(half_item_id: listing[:half_item_id])
+                          .first_or_initialize(
+          half_item_id: listing[:half_item_id],
+          price: listing[:price],
+          comments: listing[:comments]
+        )
+        if hl.new_record?
+          seller = HalfSeller.where(name: listing[:seller]).first_or_create(
+            name: listing[:seller],
+            feedback_count: listing[:feedback_count],
+            feedback_rating: listing[:feedback_rating]
+          )
+          seller.half_listings << hl
+          hl.save
+        end
+        ed.half_listings << hl
+      end
       # find or create HalfSeller by name and link to listing
       @half_search += listings
      
