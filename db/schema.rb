@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130227170428) do
+ActiveRecord::Schema.define(:version => 20130304205723) do
 
   create_table "books", :force => true do |t|
     t.string   "isbn"
@@ -37,6 +37,30 @@ ActiveRecord::Schema.define(:version => 20130227170428) do
 
   add_index "editions", ["book_id"], :name => "index_editions_on_book_id"
   add_index "editions", ["isbn"], :name => "index_editions_on_isbn", :unique => true
+
+  create_table "half_listings", :force => true do |t|
+    t.integer  "edition_id"
+    t.float    "price"
+    t.integer  "half_item_id"
+    t.integer  "half_seller_id"
+    t.string   "comments"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+  end
+
+  add_index "half_listings", ["edition_id"], :name => "index_half_listings_on_edition_id"
+  add_index "half_listings", ["half_item_id"], :name => "index_half_listings_on_half_item_id"
+  add_index "half_listings", ["half_seller_id"], :name => "index_half_listings_on_half_seller_id"
+
+  create_table "half_sellers", :force => true do |t|
+    t.string   "name"
+    t.integer  "feedback_count"
+    t.float    "feedback_rating"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+  end
+
+  add_index "half_sellers", ["name"], :name => "index_half_sellers_on_name"
 
   create_table "queries", :force => true do |t|
     t.integer  "user_id"

@@ -8,9 +8,9 @@
 
 
 require 'net/http'
+require 'nokogiri'
 #require 'json'
 #require 'hashie'
-require 'nokogiri'
 #require 'active_support/core_ext'
 #require 'debugger'
 
@@ -47,7 +47,7 @@ def half_finditems_request(params)
 end
 
 
-MAX_PAGE = 20
+MAX_PAGES = 20
 def half_finditems(params={})
   total_pages = nil
   total_entries = nil
@@ -58,7 +58,7 @@ def half_finditems(params={})
 
   all_items = []
 
-  for page in 1 .. MAX_PAGE do
+  for page in 1 .. MAX_PAGES do
     params[:page] = page
 
     body = half_finditems_request(params)
@@ -75,8 +75,12 @@ def half_finditems(params={})
 
     items = doc.css('item').map do |item|
       { 
+        half_item_id: item.css('itemID').text.to_i,
         price: item.css('price').text.to_f,
         seller: item.css('seller userID').text,
+        feedback_count: item.css('seller feedbackScore').text.to_i,
+        feedback_rating: item.css('seller positiveFeedbackPercent').text.to_f,
+        comments: item.css('comments').text
       }
     end
 

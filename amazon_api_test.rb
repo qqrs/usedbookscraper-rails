@@ -1,6 +1,6 @@
 require 'vacuum'
 require 'nokogiri'
-require 'active_support/core_ext'
+#require 'active_support/core_ext'
 
 def amazon_isbn_response(isbn)
     @req = Vacuum.new
@@ -78,6 +78,7 @@ def amazon_isbn_yaml(isbn)
 end
 
 
+=begin
 @req = Vacuum.new
 @req.configure(key:   ENV['AMAZON_AWSKEY'])
 @req.configure(secret: ENV['AMAZON_SECRETKEY'])
@@ -96,6 +97,7 @@ end
 
 @response = @req.get(query: @params)
 
+=end
     #@doc = Nokogiri::XML(@response.body)
     #puts @doc.css("Price Amount").children.text
 
