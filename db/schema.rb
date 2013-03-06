@@ -44,6 +44,7 @@ ActiveRecord::Schema.define(:version => 20130304205723) do
     t.integer  "half_item_id"
     t.integer  "half_seller_id"
     t.string   "comments"
+    t.string   "condition"
     t.datetime "created_at",     :null => false
     t.datetime "updated_at",     :null => false
   end

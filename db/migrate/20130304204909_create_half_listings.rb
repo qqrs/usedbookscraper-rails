@@ -6,6 +6,7 @@ class CreateHalfListings < ActiveRecord::Migration
       t.integer :half_item_id
       t.integer :half_seller_id
       t.string :comments
+      t.string :condition
 
       t.timestamps
     end

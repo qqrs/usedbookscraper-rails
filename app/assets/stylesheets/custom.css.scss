@@ -239,6 +239,36 @@ hr {
   margin: 2px 0px;
 }
 
+/* sellers */
+
+.sellers {
+  list-style: none;
+  margin: 0;
+
+  li {
+    overflow: auto;
+    margin: 0;
+    padding: 0px 0px 0px 4px;
+  }
+  .seller {
+    font-size: 1.4em;
+    font-weight: bold;
+  }
+  feedback {
+    font-size: small;
+    font-weight:bold;
+  }
+  .price {
+    font-size: small;
+  }
+  .title {
+    font-weight: bold;
+  }
+  .author {
+    font-size: small;
+  }
+}
+
 /* microposts */
 
 .microposts {

@@ -101,6 +101,7 @@ class HomeController < ApplicationController
 
   def query
     @query = Query.find(params[:query_id])
+=begin
     @query.query_books.each{|b| b.query_editions.destroy_all }
 
     params[:edition_ids].each do |id|
@@ -132,10 +133,26 @@ class HomeController < ApplicationController
         end
         ed.half_listings << hl
       end
-      # find or create HalfSeller by name and link to listing
       @half_search += listings
-     
     end
+=end
+
+#=begin
+    max_price = 10.00
+    seller_listings = {}
+    @query.books.each do |book|
+      logger.debug book.title
+
+      listings = book.half_listings.where("price <= ?", max_price)
+                        .order("price").group("half_seller_id").each do |li|
+        seller_listings[li.half_seller] ||= [] 
+        seller_listings[li.half_seller] << li
+      end
+    end
+    @seller_listings = seller_listings.select{|key,val| val.length >= 2}
+                                  .sort_by{|key,val| val.length}.reverse
+#=end
+
   end
 
   private

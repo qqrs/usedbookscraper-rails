@@ -5,4 +5,6 @@ class Query < ActiveRecord::Base
   has_many :books, through: :query_books
   has_many :query_editions, through: :query_books
   has_many :editions, through: :query_editions
+
+  has_many :half_listings, through: :books
 end

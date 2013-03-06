@@ -6,4 +6,5 @@ class Book < ActiveRecord::Base
   validates :title, presence: true
 
   has_many :editions
+  has_many :half_listings, through: :editions
 end

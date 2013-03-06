@@ -1,1 +1,47 @@
-<%= debug(@half_search) %>
+<div class="row"> <div class="span6 offset3">
+  <h1>results</h1>
+</div> </div>
+
+<div class="row"> <div class="span10 offset4">
+    <%= form_tag("/home/zzz") do -%>
+      <%= hidden_field_tag 'query_id', @query.id %> 
+      <%= "No results" if @seller_listings.blank? %>
+      <% @seller_listings.each do |seller, listings| %>
+        <div class="sellers">
+          <span class="seller"><%= seller.name %></span>
+          <span class="feedback">
+            ( <%= seller.feedback_count %> feedback / <%= seller.feedback_rating %>% positive )
+          </span>
+        <ul>
+
+        <% listings.each do |li| %>
+
+        <li> 
+        <label class="checkbox">
+
+          <%#= check_box_tag "edition_ids[]", edition.id, true %>
+          
+          <div class="title">
+            <span class="price">$<%= "%.2f" % li.price %></span>
+            <%= li.edition.book.title %>
+          </div>
+          <div class="author">
+            <%= li.edition.book.author %> &#x2022;
+            <%= li.edition.published_date %> &#x2022;
+            <%= li.edition.ed %>
+            <br><%= li.comments %>
+          </div>
+
+        </label>
+        <hr><br>
+        </li>
+
+        <% end %>
+        </ul>
+        <hr>
+      <% end %>
+      <div><%= submit_tag 'Continue' %></div>
+    <% end %>
+</div> </div>
+
+<%= debug(@seller_listings) %>
