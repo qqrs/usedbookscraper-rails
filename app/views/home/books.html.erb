@@ -5,7 +5,6 @@
 <div class="row"> <div class="span8 offset4">
   <%= form_tag("/home/editions") do -%>
     <ul class="books">
-      <%= hidden_field_tag 'query_id', @query.id %> 
       <%= "No valid books on selected shelves" if @books.blank? %>
       <% @books.each do |book| %>
         <li> 

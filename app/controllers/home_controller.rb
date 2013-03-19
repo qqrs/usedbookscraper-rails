@@ -20,8 +20,6 @@ class HomeController < ApplicationController
   end
 
   def books
-    @query = Query.new
-
     goodreads_user_id = params[:goodreads_user_id]
     shelves = params[:shelves]
 
@@ -44,34 +42,20 @@ class HomeController < ApplicationController
         end
       end
 
-      @query.save
-
       @books_debug = shelf if Rails.env.development?
     end
-
-    # TODO: enforce uniqueness in database
-    #@books.uniq!{|b| b.isbn}
-
   end
 
 
   def editions
-    @query = Query.find(params[:query_id])
-    @query.books.clear
-    params[:book_ids].each do |id|
-      @query.books << Book.find(id)
-    end
-    @query.save
-
+    @books = params[:book_ids].map{|id| Book.find(id)}
     @book_editions = []
-    @query.books.each do |book| 
+    @books.each do |book|
       alt_editions = xisbn_get_editions(book.isbn)
-      alt_editions.select! {|e| e.lang == "eng" }
-      # format includes BA book or BB hardcover or BC paperback
-      alt_editions.select! {|e| e.form && 
-                            e.form.any? {|f| %w'BA BB BC'.include?(f) } }     
-      alt_editions.sort_by!{|e| e.year || "9999" }.reverse!
-      #@book_editions << alt_editions
+        .select {|e| e.lang == "eng" && 
+          # format includes BA book or BB hardcover or BC paperback
+          e.form && e.form.any? {|f| %w'BA BB BC'.include?(f) } }
+        .sort_by{|e| e.year || "9999" }.reverse
 
       alt_editions.each do |alt_ed|
         edition = book.editions.where(isbn: alt_ed.isbn.first).first_or_create(
@@ -87,53 +71,46 @@ class HomeController < ApplicationController
   end
 
   def query
-    @query = Query.find(params[:query_id])
-=begin
-    @query.query_books.each{|b| b.query_editions.destroy_all }
-
+#=begin
+    editions = []
     params[:edition_ids].each do |id|
       ed = Edition.find(id)
-      qb = @query.query_books.find_by_book_id( ed.book.id )
-      qb.editions << ed
+      editions << ed
     end
 
-    @half_search = []
-    @query.editions.each do |ed| 
-      #@half_search << {isbn: ed.isbn, title: ed.book.title} 
+    @debug_half_search = []
+    half_listings = []
+    editions.each do |ed| 
       # TODO: all conditions
       listings = half_finditems(isbn: ed.isbn)
-      listings.each do |listing|
-        hl = HalfListing.where(half_item_id: listing[:half_item_id])
-                          .first_or_initialize(
-          half_item_id: listing[:half_item_id],
-          price: listing[:price],
-          comments: listing[:comments]
-        )
-        if hl.new_record?
-          seller = HalfSeller.where(name: listing[:seller]).first_or_create(
-            name: listing[:seller],
-            feedback_count: listing[:feedback_count],
-            feedback_rating: listing[:feedback_rating]
-          )
-          seller.half_listings << hl
-          hl.save
-        end
-        ed.half_listings << hl
-      end
-      @half_search += listings
+      hl = HalfListing.new(
+           half_item_id: listing[:half_item_id],
+           price: listing[:price],
+           comments: listing[:comments]
+      )
+      seller = HalfSeller.new(
+          name: listing[:seller],
+          feedback_count: listing[:feedback_count],
+          feedback_rating: listing[:feedback_rating]
+      )
+
+      half_listings += listings
+      @debug_half_search += listings
     end
-=end
+#=end
 
 #=begin
     max_price = 10.00
     seller_listings = {}
-    @query.books.each do |book|
+    editions.each do |book|
       logger.debug book.title
 
-      listings = book.half_listings.where("price <= ?", max_price)
-                        .order("price").group("half_seller_id").each do |li|
-        seller_listings[li.half_seller] ||= [] 
-        seller_listings[li.half_seller] << li
+      # TODO: filter to a single edition of a book per seller
+      #listings = half_listings.where("price <= ?", max_price)
+                        #.order("price").group("half_seller_id").each do |li|
+      listings = half_listings.each do |li|
+        seller_listings[li[:seller]] ||= [] 
+        seller_listings[li[:seller]] << li
       end
     end
     @seller_listings = seller_listings.select{|key,val| val.length >= 2}
@@ -204,19 +181,18 @@ class HomeController < ApplicationController
 
     MAX_PAGES = 20
     def half_finditems(params={})
-      total_pages = nil
-      total_entries = nil
-      page = 1
-
-      params[:isbn] ||= '0553212168'
-      params[:condition] ||= 'Good'
 
       all_items = []
+      all_total_entries = 0
 
       #conditions = [ 'Acceptable', 'Good', 'VeryGood', 'LikeNew', 'BrandNew' ] 
       conditions = [ 'Good', 'VeryGood', 'LikeNew', 'BrandNew' ] 
-      conditions.each() do |cond|
+      #conditions = [ 'Good' ]
+      conditions.each do |cond|
         params[:condition] = cond
+        total_pages = nil
+        total_entries = nil
+
         for page in 1 .. MAX_PAGES do
             params[:page] = page
 
@@ -225,33 +201,35 @@ class HomeController < ApplicationController
 
             break if doc.css('ack').text == "Failure"     # TODO: try to resume or retry?
 
-            total_pages ||= doc.css('totalPages').text.to_i
-            total_entries ||= doc.css('totalEntries').text.to_i
+            total_pages = doc.css('totalPages').text.to_i
+            total_entries = doc.css('totalEntries').text.to_i
             fail 'totalPages' if total_pages != doc.css('totalPages').text.to_i
             fail 'totalEntries' if total_entries != doc.css('totalEntries').text.to_i
 
             fail 'pageNumber' if page != doc.css('pageNumber').text.to_i
 
             items = doc.css('item').map do |item|
-            { 
+              {
                 half_item_id: item.css('itemID').text.to_i,
                 price: item.css('price').text.to_f,
                 seller: item.css('seller userID').text,
                 feedback_count: item.css('seller feedbackScore').text.to_i,
                 feedback_rating: item.css('seller positiveFeedbackPercent').text.to_f,
                 comments: item.css('comments').text
-            }
+              }
             end
 
             fail 'entriesPerPage' if doc.css('entriesPerPage').text.to_i != items.length
             break if items.length == 0
 
             all_items += items
+            all_total_entries += total_entries
+            logger.debug "%d %d %d" % [total_entries, all_total_entries, all_items.length]
 
         end
       end
 
-      fail 'total_entries' if total_entries and all_items.length != total_entries
+      fail 'total_entries' if all_total_entries and all_items.length != all_total_entries
       return all_items
     end
 end

@@ -4,7 +4,6 @@
 
 <div class="row"> <div class="span10 offset4">
     <%= form_tag("/home/zzz") do -%>
-      <%= hidden_field_tag 'query_id', @query.id %> 
       <%= "No results" if @seller_listings.blank? %>
       <% @seller_listings.each do |seller, listings| %>
         <div class="sellers">
@@ -45,3 +44,4 @@
 </div> </div>
 
 <%= debug(@seller_listings) %>
+<%= debug(@debug_half_search) %>

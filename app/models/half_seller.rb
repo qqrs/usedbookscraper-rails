@@ -1,4 +1,8 @@
-class HalfSeller < ActiveRecord::Base
+class HalfSeller
+  include ActiveModel::Validations
+  include ActiveModel::Conversion
+  extend ActiveModel::Naming
+
   attr_accessible :feedback_count, :feedback_rating, :name
 
   has_many :half_listings
