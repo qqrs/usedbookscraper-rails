@@ -42,19 +42,6 @@ class HomeController < ApplicationController
           book.save if book.new_record?
           @books << book
         end
-
-=begin
-        @books << Hashie::Mash.new(
-          { 
-            title:        b.book.title,
-            author:       b.book.authors.author.name,
-            isbn:         b.book.isbn,
-            image:        b.book.small_image_url,
-            owned:        b.owned,
-            link:         b.link
-          }
-        )
-=end
       end
 
       @query.save
@@ -226,37 +213,42 @@ class HomeController < ApplicationController
 
       all_items = []
 
-      for page in 1 .. MAX_PAGES do
-        params[:page] = page
+      #conditions = [ 'Acceptable', 'Good', 'VeryGood', 'LikeNew', 'BrandNew' ] 
+      conditions = [ 'Good', 'VeryGood', 'LikeNew', 'BrandNew' ] 
+      conditions.each() do |cond|
+        params[:condition] = cond
+        for page in 1 .. MAX_PAGES do
+            params[:page] = page
 
-        body = half_finditems_request(params)
-        doc = Nokogiri::XML(body)
+            body = half_finditems_request(params)
+            doc = Nokogiri::XML(body)
 
-        break if doc.css('ack').text == "Failure"     # TODO: try to resume or retry?
+            break if doc.css('ack').text == "Failure"     # TODO: try to resume or retry?
 
-        total_pages ||= doc.css('totalPages').text.to_i
-        total_entries ||= doc.css('totalEntries').text.to_i
-        fail 'totalPages' if total_pages != doc.css('totalPages').text.to_i
-        fail 'totalEntries' if total_entries != doc.css('totalEntries').text.to_i
+            total_pages ||= doc.css('totalPages').text.to_i
+            total_entries ||= doc.css('totalEntries').text.to_i
+            fail 'totalPages' if total_pages != doc.css('totalPages').text.to_i
+            fail 'totalEntries' if total_entries != doc.css('totalEntries').text.to_i
 
-        fail 'pageNumber' if page != doc.css('pageNumber').text.to_i
+            fail 'pageNumber' if page != doc.css('pageNumber').text.to_i
 
-        items = doc.css('item').map do |item|
-          { 
-            half_item_id: item.css('itemID').text.to_i,
-            price: item.css('price').text.to_f,
-            seller: item.css('seller userID').text,
-            feedback_count: item.css('seller feedbackScore').text.to_i,
-            feedback_rating: item.css('seller positiveFeedbackPercent').text.to_f,
-            comments: item.css('comments').text
-          }
+            items = doc.css('item').map do |item|
+            { 
+                half_item_id: item.css('itemID').text.to_i,
+                price: item.css('price').text.to_f,
+                seller: item.css('seller userID').text,
+                feedback_count: item.css('seller feedbackScore').text.to_i,
+                feedback_rating: item.css('seller positiveFeedbackPercent').text.to_f,
+                comments: item.css('comments').text
+            }
+            end
+
+            fail 'entriesPerPage' if doc.css('entriesPerPage').text.to_i != items.length
+            break if items.length == 0
+
+            all_items += items
+
         end
-
-        fail 'entriesPerPage' if doc.css('entriesPerPage').text.to_i != items.length
-        break if items.length == 0
-
-        all_items += items
-
       end
 
       fail 'total_entries' if total_entries and all_items.length != total_entries
