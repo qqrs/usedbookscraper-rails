@@ -3,35 +3,36 @@
 </div> </div>
 
 <div class="row"> <div class="span10 offset4">
-    <%= form_tag("/home/zzz") do -%>
       <%= "No results" if @seller_listings.blank? %>
-      <% @seller_listings.each do |seller, listings| %>
+      <% @seller_listings.each do |seller| %>
         <div class="sellers">
           <span class="seller"><%= seller.name %></span>
           <span class="feedback">
-            ( <%= seller.feedback_count %> feedback / <%= seller.feedback_rating %>% positive )
+              ( <%= seller.feedback_count %> feedback / 
+              <%= seller.feedback_rating %>% positive )
           </span>
         <ul>
 
-        <% listings.each do |li| %>
+        <% seller.listings.each do |li| %>
 
         <li> 
-        <label class="checkbox">
 
-          <%#= check_box_tag "edition_ids[]", edition.id, true %>
-          
+        <div class="book">
+        <a href="<%= li.half_item_url %>" target="_blank">
           <div class="title">
             <span class="price">$<%= "%.2f" % li.price %></span>
-            <%= li.edition.book.title %>
+              <%= li.edition.book.title %>
           </div>
-          <div class="author">
-            <%= li.edition.book.author %> &#x2022;
+          <div class="details">
+            <%= li.edition.book.author %> <br>
+            <%= li.condition %> &#x2022;
             <%= li.edition.published_date %> &#x2022;
             <%= li.edition.ed %>
             <br><%= li.comments %>
           </div>
+        </a>
+        </div>
 
-        </label>
         <hr><br>
         </li>
 
@@ -39,8 +40,6 @@
         </ul>
         <hr>
       <% end %>
-      <div><%= submit_tag 'Continue' %></div>
-    <% end %>
 </div> </div>
 
 <%= debug(@seller_listings) %>

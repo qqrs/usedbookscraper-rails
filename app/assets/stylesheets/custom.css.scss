@@ -250,11 +250,19 @@ hr {
     margin: 0;
     padding: 0px 0px 0px 4px;
   }
+  .book {
+    a {
+      color: #333333;
+    }
+    a:hover {
+      text-decoration: none;
+    }
+  }
   .seller {
     font-size: 1.4em;
     font-weight: bold;
   }
-  feedback {
+  .feedback {
     font-size: small;
     font-weight:bold;
   }
@@ -264,7 +272,7 @@ hr {
   .title {
     font-weight: bold;
   }
-  .author {
+  .details {
     font-size: small;
   }
 }
