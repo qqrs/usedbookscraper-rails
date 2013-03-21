@@ -51,6 +51,8 @@ class HomeController < ApplicationController
         .sort_by{|e| e.year || "9999" }.reverse
 
       alt_editions.each do |alt_ed|
+        #todo check this
+        raise alt_ed if !alt_ed || alt_ed == ""
         edition = book.editions.where(isbn: alt_ed.isbn.first).first_or_create(
             isbn:     alt_ed.isbn.first,
             title:    alt_ed.title,
@@ -65,8 +67,8 @@ class HomeController < ApplicationController
 
   def query
     max_price = 3.00
-    #conditions = [ 'Acceptable', 'Good', 'VeryGood', 'LikeNew', 'BrandNew' ] 
-    conditions = [ 'Good', 'VeryGood', 'LikeNew', 'BrandNew' ] 
+    conditions = ['Acceptable', 'Good', 'VeryGood', 'LikeNew', 'BrandNew'] 
+    selected_conditions = [ 'Good', 'VeryGood', 'LikeNew', 'BrandNew' ] 
 
     # get editions selected by user for Half.com search
     editions = params[:edition_ids].map{|id| Edition.find(id)}
@@ -75,7 +77,7 @@ class HomeController < ApplicationController
     @seller_listings = []
     editions.each do |ed| 
       # get all listings for this edition
-      listings = conditions.map do |cond|
+      listings = selected_conditions.map do |cond|
         half_finditems(isbn: ed.isbn, condition: cond, maxprice: max_price)
       end.flatten(1)
 
@@ -103,31 +105,51 @@ class HomeController < ApplicationController
       @debug_half_search += listings
     end
 
-    @seller_listings = @seller_listings.select!{|s| s.listings.length >= 2}
-                            .sort_by{|s| s.listings.length}.reverse
-    #@seller_listings.each do |s|
-      #s.listings.uniq! {|li| li.edition.book }
-      #s.books = s.listings.group_by{ |li| li.edition.book }
-    #end
-
-
-=begin
-    seller_listings = {}
-    editions.each do |book|
-      logger.debug book.title
-
-      # TODO: filter to a single edition of a book per seller
-      #listings = half_listings.where("price <= ?", max_price)
-                        #.order("price").group("half_seller_id").each do |li|
-      listings = half_listings.each do |li|
-        seller_listings[li[:seller]] ||= [] 
-        seller_listings[li[:seller]] << li
-      end
+    @seller_listings.each do |s|
+      s.books = s.listings.group_by{ |li| li.edition.book }
     end
-    @seller_listings = seller_listings.select{|key,val| val.length >= 2}
-                                  .sort_by{|key,val| val.length}.reverse
-=end
 
+    @seller_listings_filtered = @seller_listings.select{|s| s.books.length >= 2}
+    if @seller_listings_filtered.length > 0
+      @seller_listings = @seller_listings_filtered 
+    end
+
+    @seller_listings.each do |s|
+      s.best = []
+      s.books.each do |book, listings|
+        lowcost = listings.sort_by{|li| li.price}.first
+
+        preferred = listings.select do |li| 
+          (conditions.index(li.condition) >= conditions.index('VeryGood') &&
+            li.price <= 1.6 * lowcost.price)
+        end.sort_by do |li|
+          [ -conditions.index(li.condition), 
+            -li.edition.published_date.to_i, 
+            li.price ]
+        end
+=begin
+        ranked = ranked.sort do |a,b|
+          cmp = conditions.index(b.condition) <=> conditions.index(a.condition)
+          if cmp == 0
+            cmp = b.edition.published_date <=> a.edition.published_date
+          end
+          if cmp == 0
+            a.price <=> b.price
+          end
+          cmp
+        end
+=end
+        s.best << (preferred.first || lowcost)
+      end
+      s.best = s.best.sort_by{|b| b.price}
+    end
+
+    @seller_listings = @seller_listings.sort_by{|s| s.best.length}.reverse
+
+
+    # choose best listing for each book: 
+    # (best condition >= Very Good and price <= max_price/2)
+    # else (lowest price)
   end
 
   private
@@ -220,7 +242,7 @@ class HomeController < ApplicationController
             feedback_count: item.css('seller feedbackScore').text.to_i,
             feedback_rating: item.css('seller positiveFeedbackPercent').text.to_f,
             comments: item.css('comments').text,
-            condition: params[:condition].titleize
+            condition: params[:condition]
           }
         end
 
@@ -235,58 +257,4 @@ class HomeController < ApplicationController
       return all_items
     end
 
-=begin
-    MAX_PAGES = 20
-    def half_finditems(params={})
-
-      all_items = []
-      all_total_entries = 0
-
-      conditions = [ 'Good', 'VeryGood', 'LikeNew', 'BrandNew' ] 
-      #conditions = [ 'Good' ]
-      conditions.each do |cond|
-        params[:condition] = cond
-        total_pages = nil
-        total_entries = nil
-
-        for page in 1 .. MAX_PAGES do
-            params[:page] = page
-
-            body = half_finditems_request(params)
-            doc = Nokogiri::XML(body)
-
-            break if doc.css('ack').text == "Failure"     # TODO: try to resume or retry?
-
-            total_pages = doc.css('totalPages').text.to_i
-            total_entries = doc.css('totalEntries').text.to_i
-            raise 'totalPages' if total_pages != doc.css('totalPages').text.to_i
-            raise 'totalEntries' if total_entries != doc.css('totalEntries').text.to_i
-
-            raise 'pageNumber' if page != doc.css('pageNumber').text.to_i
-
-            items = doc.css('item').map do |item|
-              {
-                half_item_id: item.css('itemID').text.to_i,
-                price: item.css('price').text.to_f,
-                seller: item.css('seller userID').text,
-                feedback_count: item.css('seller feedbackScore').text.to_i,
-                feedback_rating: item.css('seller positiveFeedbackPercent').text.to_f,
-                comments: item.css('comments').text
-              }
-            end
-
-            raise 'entriesPerPage' if doc.css('entriesPerPage').text.to_i != items.length
-            break if items.length == 0
-
-            all_items += items
-            all_total_entries += total_entries
-            logger.debug "%d %d %d" % [total_entries, all_total_entries, all_items.length]
-
-        end
-      end
-
-      raise RuntimeError, 'total_entries' + params.to_yaml if all_total_entries and all_items.length != all_total_entries
-      return all_items
-    end
-=end
 end

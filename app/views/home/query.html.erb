@@ -8,33 +8,33 @@
         <div class="sellers">
           <span class="seller"><%= seller.name %></span>
           <span class="feedback">
+              ( <%= seller.best.length %> )
               ( <%= seller.feedback_count %> feedback / 
               <%= seller.feedback_rating %>% positive )
           </span>
         <ul>
 
-        <% seller.listings.each do |li| %>
+        <% seller.best.each do |li| %>
 
-        <li> 
+            <li> 
+            <div class="book">
+            <a href="<%= li.half_item_url %>" target="_blank">
+            <div class="title">
+                <span class="price">$<%= "%.2f" % li.price %></span>
+                <%= li.edition.book.title %>
+            </div>
+            <div class="details">
+                <%= li.edition.book.author %> <br>
+                <%= li.condition.titleize %> &#x2022;
+                <%= li.edition.published_date %> &#x2022;
+                <%= li.edition.ed %>
+                <br><%= li.comments %>
+            </div>
+            </a>
+            </div>
 
-        <div class="book">
-        <a href="<%= li.half_item_url %>" target="_blank">
-          <div class="title">
-            <span class="price">$<%= "%.2f" % li.price %></span>
-              <%= li.edition.book.title %>
-          </div>
-          <div class="details">
-            <%= li.edition.book.author %> <br>
-            <%= li.condition %> &#x2022;
-            <%= li.edition.published_date %> &#x2022;
-            <%= li.edition.ed %>
-            <br><%= li.comments %>
-          </div>
-        </a>
-        </div>
-
-        <hr><br>
-        </li>
+            <hr><br>
+            </li>
 
         <% end %>
         </ul>
