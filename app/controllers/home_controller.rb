@@ -24,10 +24,12 @@ class HomeController < ApplicationController
       # goodreads api is paginated -- retrieve first 200 books per shelf
       shelf = gr.shelf(goodreads_user_id, shelf_name, per_page: '200')
       shelf.books.each do |b|
+        next if !b.book.isbn || !b.book.title
+
         book = Book.where(isbn: b.book.isbn).first_or_initialize(
-            title:  b.book.title, 
-            author: b.book.authors.author.name,
-            isbn:   b.book.isbn
+            title:  (b.book.title || "")[0,255], 
+            author: (b.book.authors.author.name || "")[0,255],
+            isbn:   (b.book.isbn || "")[0,255]
         )
 
         if book.valid?
@@ -53,12 +55,12 @@ class HomeController < ApplicationController
 
       alt_editions.each do |alt_ed|
         edition = book.editions.where(isbn: alt_ed.isbn.first).first_or_create(
-            isbn:     alt_ed.isbn.first,
-            title:    alt_ed.title,
-            author:   alt_ed.author,
-            language: alt_ed.lang,
-            ed:       alt_ed.ed,
-            published_date:   alt_ed.year
+            isbn:     (alt_ed.isbn.first || "")[0,255],
+            title:    (alt_ed.title || "")[0,255],
+            author:   (alt_ed.author || "")[0,255],
+            language: (alt_ed.lang || "")[0,255],
+            ed:       (alt_ed.ed || "")[0,255],
+            published_date:   (alt_ed.year || "")[0,255]
         )
       end
     end
