@@ -51,8 +51,6 @@ class HomeController < ApplicationController
         .sort_by{|e| e.year || "9999" }.reverse
 
       alt_editions.each do |alt_ed|
-        #todo check this
-        raise alt_ed if !alt_ed || alt_ed == ""
         edition = book.editions.where(isbn: alt_ed.isbn.first).first_or_create(
             isbn:     alt_ed.isbn.first,
             title:    alt_ed.title,
@@ -105,18 +103,18 @@ class HomeController < ApplicationController
       @debug_half_search += listings
     end
 
+    # filter to sellers with more than one book, unless none are found
     @seller_listings.each do |s|
       s.books = s.listings.group_by{ |li| li.edition.book }
     end
-
     @seller_listings_filtered = @seller_listings.select{|s| s.books.length >= 2}
     if @seller_listings_filtered.length > 0
       @seller_listings = @seller_listings_filtered 
     end
 
     @seller_listings.each do |s|
-      s.best = []
-      s.books.each do |book, listings|
+      # choose best listing for each book
+      s.best = s.books.map do |book, listings|
         lowcost = listings.sort_by{|li| li.price}.first
 
         preferred = listings.select do |li| 
@@ -127,21 +125,9 @@ class HomeController < ApplicationController
             -li.edition.published_date.to_i, 
             li.price ]
         end
-=begin
-        ranked = ranked.sort do |a,b|
-          cmp = conditions.index(b.condition) <=> conditions.index(a.condition)
-          if cmp == 0
-            cmp = b.edition.published_date <=> a.edition.published_date
-          end
-          if cmp == 0
-            a.price <=> b.price
-          end
-          cmp
-        end
-=end
-        s.best << (preferred.first || lowcost)
-      end
-      s.best = s.best.sort_by{|b| b.price}
+
+        (preferred.first || lowcost)
+      end.sort_by{|b| b.price}
     end
 
     @seller_listings = @seller_listings.sort_by{|s| s.best.length}.reverse
