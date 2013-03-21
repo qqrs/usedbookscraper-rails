@@ -8,7 +8,6 @@
         <div class="sellers">
           <span class="seller"><%= seller.name %></span>
           <span class="feedback">
-              ( <%= seller.best.length %> )
               ( <%= seller.feedback_count %> feedback / 
               <%= seller.feedback_rating %>% positive )
           </span>
@@ -18,10 +17,11 @@
 
             <li> 
             <div class="book">
-            <a href="<%= li.half_item_url %>" target="_blank">
             <div class="title">
                 <span class="price">$<%= "%.2f" % li.price %></span>
-                <%= li.edition.book.title %>
+                <a href="<%= li.half_item_url %>" target="_blank">
+                    <%= li.edition.book.title %>
+                </a>
             </div>
             <div class="details">
                 <%= li.edition.book.author %> <br>
@@ -30,7 +30,6 @@
                 <%= li.edition.ed %>
                 <br><%= li.comments %>
             </div>
-            </a>
             </div>
 
             <hr><br>
@@ -42,5 +41,5 @@
       <% end %>
 </div> </div>
 
-<%= debug(@seller_listings) %>
-<%= debug(@debug_half_search) %>
+<%#= debug(@seller_listings) %>
+<%#= debug(@debug_half_search) %>

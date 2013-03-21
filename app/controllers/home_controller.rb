@@ -21,7 +21,7 @@ class HomeController < ApplicationController
     @books = []
 
     shelves.each do |shelf_name|
-      # TODO: goodreads api is paginated -- retrieve first 200 books per shelf
+      # goodreads api is paginated -- retrieve first 200 books per shelf
       shelf = gr.shelf(goodreads_user_id, shelf_name, per_page: '200')
       shelf.books.each do |b|
         book = Book.where(isbn: b.book.isbn).first_or_initialize(
@@ -44,7 +44,8 @@ class HomeController < ApplicationController
     @books = params[:book_ids].map{|id| Book.find(id)}
     @book_editions = []
     @books.each do |book|
-      # language English and format BA book or BB hardcover or BC paperback
+      # get alternate editions from xisbn service and filter to English and 
+      # book formats (BA=book BB=hardcover BC=paperback)
       alt_editions = xisbn_get_editions(book.isbn)
         .select {|e| e.lang == "eng" && 
           e.form && e.form.any? {|f| %w'BA BB BC'.include?(f) } }
@@ -103,7 +104,7 @@ class HomeController < ApplicationController
       @debug_half_search += listings
     end
 
-    # filter to sellers with more than one book, unless none are found
+    # filter out sellers with one book, unless no sellers have more than one
     @seller_listings.each do |s|
       s.books = s.listings.group_by{ |li| li.edition.book }
     end
@@ -113,7 +114,7 @@ class HomeController < ApplicationController
     end
 
     @seller_listings.each do |s|
-      # choose best listing for each book
+      # choose best listing for each book and sort listings by price
       s.best = s.books.map do |book, listings|
         lowcost = listings.sort_by{|li| li.price}.first
 
@@ -130,6 +131,7 @@ class HomeController < ApplicationController
       end.sort_by{|b| b.price}
     end
 
+    # sort sellers by number of books for sale
     @seller_listings = @seller_listings.sort_by{|s| s.best.length}.reverse
 
 

@@ -2,20 +2,16 @@
   <div class="span6 offset3">
   <h1>select shelves</h1>
 
-    Goodreads user id: <%= @goodreads_user_id %> <br />
-    Goodreads api key: <%= ENV["GOODREADS_KEY"] %> <br />
-
     <ul>
         <%= form_tag("/home/books") do -%>
           <%= hidden_field_tag 'goodreads_user_id', @goodreads_user_id %> 
           <% @shelves.each do |shelf| %>
-            <%#=label_tag shelf.name, shelf.name, class: 'checkbox' %>
             <label class="checkbox">
               <%=check_box_tag 'shelves[]', shelf.name %>
               <%=shelf.name %>
             </label>
           <% end -%>
-        <div><%= submit_tag 'Save' %></div>
+        <div><%= submit_tag 'Continue' %></div>
       <% end %>
     </ul>
 
